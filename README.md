@@ -17,8 +17,11 @@ https://root-blog.tistory.com/3
 
 
 >배치파일 만들어서 실행해줘야함
+>
 >처음 실행 후 config.ini에서 LMS 주소, 아이디, 비밀번호 넣어주고 다시 실행해주면됨
+>
 >https://your_university.ac.kr/mod/vod/view.php?id=123456 형식이나
+>
 >https://your_university.ac.kr/mod/vod/viewer.php?id=123456 형식의 링크를 붙여 넣으면 알아서 mp4로 받아줌
 
 
