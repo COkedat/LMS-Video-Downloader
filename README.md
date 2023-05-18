@@ -25,6 +25,9 @@ https://root-blog.tistory.com/3
 >https://your_university.ac.kr/mod/vod/viewer.php?id=123456 형식의 링크를 붙여 넣으면 알아서 mp4로 받아줌
 
 
-Todo) 영상 다운로드 목록 작성(?)
-      로그인 오류 처리
-      배치파일 없이 실행
+
+>Todo) 영상 다운로드 목록 작성(?)
+>
+>      로그인 오류 처리
+>      
+>      배치파일 없이 실행
