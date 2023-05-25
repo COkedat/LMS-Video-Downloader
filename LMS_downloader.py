@@ -104,7 +104,7 @@ class LMSDownloader:
         tree = html.fromstring(rawHtml)
 
         result_URL = tree.xpath('/html/head/script[3]/text()')
-        result_name = result = tree.xpath('//*[@id="vod_header"]/h1/text()')[0].strip()
+        result_name = tree.xpath('//*[@id="vod_header"]/h1/text()')[0].strip()
 
         match = re.search(r"file: '(.+?)'", result_URL[0])
 
