@@ -93,29 +93,35 @@ class LMSDownloader:
         html = self.LMSSession.get(url)
         return html.text
 
-    # m3u8 링크만 따오는 함수
-    def getM3U8URL(self, url):
+
+    # m3u8 정보 따오는 함수 
+    # return : m3u8주소, 영상 제목
+    def getM3U8Info(self, url):
         if url.find("view.php") != -1:
             url = url.replace("view.php", "viewer.php")
 
         rawHtml = self.get_html(url)
         tree = html.fromstring(rawHtml)
 
-        result = tree.xpath('/html/head/script[3]/text()')
+        result_URL = tree.xpath('/html/head/script[3]/text()')
+        result_name = tree.xpath('//*[@id="vod_header"]/h1/text()')[0].strip()
 
-        match = re.search(r"file: '(.+?)'", result[0])
+        match = re.search(r"file: '(.+?)'", result_URL[0])
 
         if match:
             m3u8URL = match.group(1)
-            return(m3u8URL)
+            return m3u8URL, result_name
         else :
             return("Unvalid URL!")
 
     # 페이지 저장하는 함수
     # m3u8 따오는 함수로 변경해야함
-    def saveM3U8(self, url):
+    def saveM3U8(self, url, name):
         # subprocess에 의한 ffmpeg 호출과정
-        fileName = input("저장할 파일의 이름을 입력해주세요 : ")
+        fileName = input("저장할 파일의 이름을 입력해주세요 (미입력시 임의로 저장됩니다) : ")
+        if len(fileName) < 1 :
+            fileName = name
+        
         code=subprocess.call([
         'ffmpeg',
         '-i', '%s' %url,
@@ -127,11 +133,13 @@ class LMSDownloader:
 def main():
     S=LMSDownloader()
     while True:
-        urlin=input("다운로드 할 링크 입력 (exit 입력으로 종료) : ")
+        urlin = input("다운로드 할 링크 입력 (exit 입력으로 종료) : ")
+
         if urlin == "exit":
             exit(0)
-        m3u8Link = S.getM3U8URL(urlin)
-        S.saveM3U8(m3u8Link)
+
+        m3u8Link, fileName = S.getM3U8Info(urlin)
+        S.saveM3U8(m3u8Link, fileName)
     
 if __name__ == "__main__":
 	main()
