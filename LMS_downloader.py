@@ -20,6 +20,7 @@ class LMSDownloader:
         self.username = ""
         self.password = ""
         self.down_path = "./m3u8DL"
+        self.auto_name= False
         self.RequestHeaders = {}
         self.LMSSession = None
         self.LMS_url = ""
@@ -41,6 +42,7 @@ class LMSDownloader:
             config["account"]["username"] = "username"
             config["account"]["password"] = "password"
             config["config"] = {}
+            config["config"]["auto_name"] = False
             config["config"]["down_path"] = "./m3u8DL"
             config["config"]["LMS_Login_url"] = "https://your_university.ac.kr/login/index.php"
 
@@ -59,6 +61,7 @@ class LMSDownloader:
         self.username = config["account"]["username"]
         self.password = config["account"]["password"]
         self.down_path = config["config"]["down_path"]
+        self.auto_name = config["config"]["auto_name"]
         self.LMS_url=config["config"]["LMS_Login_url"]
         if not os.path.exists(self.down_path):  # create only once
             os.mkdir(self.down_path)
@@ -118,10 +121,16 @@ class LMSDownloader:
     # m3u8 따오는 함수로 변경해야함
     def saveM3U8(self, url, name):
         # subprocess에 의한 ffmpeg 호출과정
-        fileName = input("저장할 파일의 이름을 입력해주세요 (미입력시 임의로 저장됩니다) : ")
-        if len(fileName) < 1 :
+        # auto_name이 true일 경우 자동이름
+        if(self.auto_name == True):
             fileName = name
-        
+
+        # false일 경우 이름 따로 받음
+        else:
+            fileName = input("저장할 파일의 이름을 입력해주세요 (미입력시 임의로 저장됩니다) : ")
+            if len(fileName) < 1 :
+                fileName = name
+
         code=subprocess.call([
         'ffmpeg',
         '-i', '%s' %url,
