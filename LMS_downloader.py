@@ -61,7 +61,11 @@ class LMSDownloader:
         self.username = config["account"]["username"]
         self.password = config["account"]["password"]
         self.down_path = config["config"]["down_path"]
-        self.auto_name = config["config"]["auto_name"]
+        chk= config["config"]["auto_name"]
+        if(chk=="True"):
+            self.auto_name = True 
+        else: 
+            self.auto_name = False
         self.LMS_url=config["config"]["LMS_Login_url"]
         if not os.path.exists(self.down_path):  # create only once
             os.mkdir(self.down_path)
