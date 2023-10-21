@@ -42,7 +42,7 @@ class LMSDownloader:
             config["account"]["username"] = "username"
             config["account"]["password"] = "password"
             config["config"] = {}
-            config["config"]["auto_name"] = False
+            config["config"]["auto_name"] = "False"
             config["config"]["down_path"] = "./m3u8DL"
             config["config"]["LMS_Login_url"] = "https://your_university.ac.kr/login/index.php"
 
