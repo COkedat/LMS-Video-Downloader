@@ -7,6 +7,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import re
 from fake_useragent import UserAgent
+import re
 import configparser
 from tqdm import tqdm
 import subprocess
@@ -135,6 +136,10 @@ class LMSDownloader:
             if len(fileName) < 1 :
                 fileName = name
 
+        # 파일명에 특수문자가 들어가면 안되므로 제거
+        fileName = re.sub(r'[\\/:*?"<>|]', '', fileName)
+        
+        # ffmpeg 호출
         code=subprocess.call([
         'ffmpeg',
         '-i', '%s' %url,

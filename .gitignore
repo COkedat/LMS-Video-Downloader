@@ -2,3 +2,5 @@
 *.bat
 *.mp4
 *.ini
+*.exe
+/m3u8DL/*
