@@ -19,6 +19,10 @@ https://root-blog.tistory.com/3
 >
 >처음 실행 후 config.ini에서 LMS 주소, 아이디, 비밀번호 넣어주고 다시 실행해주면됨
 >
+>config.ini에 입력하는 주소는 https://your_university.ac.kr/login/index.php 형식이면 됨
+>
+>CLI 창에서는 로그인 완료 후
+>
 >https://your_university.ac.kr/mod/vod/view.php?id=123456 형식이나
 >
 >https://your_university.ac.kr/mod/vod/viewer.php?id=123456 형식의 링크를 붙여 넣으면 알아서 mp4로 받아줌
