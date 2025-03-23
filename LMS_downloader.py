@@ -11,6 +11,7 @@ import re
 import configparser
 from tqdm import tqdm
 import subprocess
+import urllib
 import codecs
 from lxml import html
 
@@ -45,7 +46,7 @@ class LMSDownloader:
             config["config"] = {}
             config["config"]["auto_name"] = "False"
             config["config"]["down_path"] = "./m3u8DL"
-            config["config"]["LMS_Login_url"] = "https://your_university.ac.kr/login/index.php"
+            config["config"]["LMS_Login_url"] = "https://your_university.ac.kr/login.php"
 
             # 설정파일 저장
             with open("./config.ini", "w", encoding="utf-8") as configfile:
@@ -74,27 +75,95 @@ class LMSDownloader:
     def LMS_login(self):
         #LMS에 로그인 함
         self.LMSSession = requests.session()
-
+        """
         LOGIN_INFO = {
             "username": self.username,
             "password": self.password,
-            "goto": "/",
         }
+        LOGIN_INFO = urllib.parse.urlencode(LOGIN_INFO)
         self.RequestHeaders = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
             "referer": self.LMS_url,
+            "host": urlparts.netloc,
+            "origin": "https://"+urlparts.netloc,
+            "sec-ch-ua": "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Google Chrome\";v=\"134\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "Windows",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?1",
+            "dnt": "1",
+            "content-type":"application/x-www-form-urlencoded",
+            "content-length": str(len(LOGIN_INFO)),
+            "upgrade-insecure-requests": "1"
         }
+        
         login = self.LMSSession.post(
             self.LMS_url, 
             data=LOGIN_INFO, 
             headers=self.RequestHeaders
         )
 
-        if login.status_code != 200:
+        dashboard = self.LMSSession.get(self.LMS_url)
+        """
+        # 크롬 드라이버 설정
+        from webdriver_manager.chrome import ChromeDriverManager
+        from selenium import webdriver
+        from selenium.webdriver.common.keys import Keys
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.chrome.service import Service
+
+        # 크롬 드라이버 불러오기
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+        chrome_options.add_argument('window-size=1920x1080')
+        chrome_options.add_argument("disable-gpu")
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.get(self.LMS_url)
+        driver.implicitly_wait(time_to_wait=5)
+
+        print("Logging in.. Please Wait..")
+
+        # 입력창 찾기
+        username_input = driver.find_element("name", "username")
+        password_input = driver.find_element("name", "password")
+
+        # 값 입력 시키기
+        username_input.send_keys(self.username)
+        time.sleep(1)
+        password_input.send_keys(self.password)
+        time.sleep(1)
+
+        # 엔터 입력 (로그인)
+        password_input.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        # 쿠키 복사
+        print(driver.get_cookies)
+        _cookies = driver.get_cookies()
+        cookie_dict = {}
+        for cookie in _cookies:
+            cookie_dict[cookie['name']] = cookie['value']
+
+        # 복사후 크롬 드라이버는 종료
+        driver.quit()
+
+        # 세션 만들기
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+        }
+        self.LMSSession.headers.update(headers)  # User-Agent 변경
+        self.LMSSession.cookies.update(cookie_dict)  # 응답받은 cookies로 변경
+        
+        # 로그인 여부 확인 (로그아웃 같은게 없다면 실패와 같음)
+        urlparts = urllib.parse.urlparse(self.LMS_url)
+        dashboard = self.LMSSession.get("https://"+urlparts.netloc)
+        if not ("로그아웃" in dashboard.text or "로그 아웃" in dashboard.text or "log out" in dashboard.text or "logout" in dashboard.text or "退出登录" in dashboard.text or "ログアウト" in dashboard.text):
             print("Login Failed!!")
             input("Press Enter to Continue...")
             exit()
-        login.raise_for_status()
         print("Login Successful")
 
     def get_html(self, url):
