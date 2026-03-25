@@ -5,4 +5,4 @@ fake-useragent==1.1.1
 lxml==4.9.2
 requests==2.32.4
 tqdm==4.66.3
-urllib3==1.26.19
+urllib3==2.6.3
