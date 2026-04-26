@@ -2,7 +2,7 @@ beautifulsoup4==4.11.2
 bs4==0.0.1
 configparser==5.3.0
 fake-useragent==1.1.1
-lxml==4.9.2
+lxml==6.1.0
 requests==2.32.4
 tqdm==4.66.3
 urllib3==2.6.3
